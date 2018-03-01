@@ -36770,31 +36770,43 @@ var ChartContainer = function (_React$Component) {
 
     _this.state = { value: '' };
     _this.handleSubmit = _this.handleSubmit.bind(_this);
+    _this.handleChange = _this.handleChange.bind(_this);
+    _this.inputValue = '';
     // this.ws = new WebSocket('ws://localhost:8080');
     return _this;
   }
 
   // connect to the web sockets server
-  // WSSend(str) {
-  //   console.log
-  //   // event emmited when connected
-  //   this.ws.onopen = function () {
-  //     console.log('websocket is connected ...')
-  //     // sending a send event to websocket server
-  //     ws.send(str)
-  //   }
-  //   // event emmited when receiving message
-  //   this.ws.onmessage = function (ev) {
-  //     console.log(ev);
-  //   }
-  // }
+
 
   _createClass(ChartContainer, [{
+    key: 'WSConnect',
+    value: function WSConnect() {
+      var ws = new WebSocket('ws://localhost:8080');
+      var message = this.inputValue;
+      // event emmited when connected
+      ws.onopen = function () {
+        console.log('websocket is connected ...');
+        // sending a send event to websocket server
+        ws.send(message);
+      };
+      // event emmited when receiving message
+      ws.onmessage = function (ev) {
+        console.log(ev);
+      };
+    }
+  }, {
     key: 'handleSubmit',
     value: function handleSubmit(e) {
       e.preventDefault();
-      console.log("got here");
+      console.log(this.inputValue);
+      this.WSConnect();
       // this.WSSend("connected");
+    }
+  }, {
+    key: 'handleChange',
+    value: function handleChange(e) {
+      this.inputValue = e.target.value;
     }
   }, {
     key: 'render',
@@ -36816,7 +36828,12 @@ var ChartContainer = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'panel-heading' },
-                'Stock info ...'
+                'Stock info ...',
+                _react2.default.createElement(
+                  'button',
+                  { className: 'btn btn-default btn-xs pull-right panel-button' },
+                  _react2.default.createElement('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' })
+                )
               ),
               _react2.default.createElement(
                 'div',
@@ -36835,12 +36852,7 @@ var ChartContainer = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'panel-heading' },
-                'Add a new stock by code',
-                _react2.default.createElement(
-                  'button',
-                  { className: 'btn btn-default btn-xs pull-right' },
-                  _react2.default.createElement('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' })
-                )
+                'Add a new stock by code'
               ),
               _react2.default.createElement(
                 'div',
@@ -36851,7 +36863,7 @@ var ChartContainer = function (_React$Component) {
                   _react2.default.createElement(
                     'div',
                     { className: 'form-group' },
-                    _react2.default.createElement('input', { className: 'form-control', placeholder: 'Stock code ...', type: 'text', value: this.state.CodeValue })
+                    _react2.default.createElement('input', { className: 'form-control', placeholder: 'Stock code ...', type: 'text', onChange: this.handleChange, value: this.state.CodeValue })
                   ),
                   _react2.default.createElement(
                     'button',
@@ -36884,7 +36896,7 @@ if (target) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(console) {
+
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -36921,28 +36933,10 @@ var Chart = function (_React$Component) {
     return _possibleConstructorReturn(this, (Chart.__proto__ || Object.getPrototypeOf(Chart)).call(this, props));
   }
 
-  // connect to the web sockets server
+  // gets called after the componnent was mounted
 
 
   _createClass(Chart, [{
-    key: 'WSConnect',
-    value: function WSConnect() {
-      var ws = new WebSocket('ws://localhost:8080');
-      // event emmited when connected
-      ws.onopen = function () {
-        console.log('websocket is connected ...');
-        // sending a send event to websocket server
-        ws.send('connected');
-      };
-      // event emmited when receiving message
-      ws.onmessage = function (ev) {
-        console.log(ev);
-      };
-    }
-
-    // gets called after the componnent was mounted
-
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
 
@@ -36980,12 +36974,12 @@ var Chart = function (_React$Component) {
         options: {
           title: {
             display: true,
-            text: 'World population per region (in millions)'
+            text: 'Stock data of selected companies'
           }
         }
       });
 
-      this.WSConnect();
+      // this.WSConnect();
     }
   }, {
     key: 'render',
@@ -36998,7 +36992,6 @@ var Chart = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Chart;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
 /* 163 */

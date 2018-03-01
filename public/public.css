@@ -15,7 +15,8 @@ a {
     background-color: #66499e;
     color: #fff; }
   #app .panel {
-    position: relative; }
+    position: relative;
+    min-height: 160px; }
     #app .panel-glyphicon {
       margin-right: 4px;
       color: #66499e; }
