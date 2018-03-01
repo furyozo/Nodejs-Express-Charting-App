@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Chartjs from 'chart.js'
+import Chartjs from 'chart.js';
 
 export default class Chart extends React.Component {
 
@@ -8,6 +8,22 @@ export default class Chart extends React.Component {
     super(props);
   }
 
+  // connect to the web sockets server
+  WSConnect() {
+    var ws = new WebSocket('ws://localhost:8080');
+    // event emmited when connected
+    ws.onopen = function () {
+      console.log('websocket is connected ...')
+      // sending a send event to websocket server
+      ws.send('connected')
+    }
+    // event emmited when receiving message
+    ws.onmessage = function (ev) {
+      console.log(ev);
+    }
+  }
+
+  // gets called after the componnent was mounted
   componentDidMount() {
 
     new Chartjs(document.getElementById("chart"), {
@@ -50,10 +66,7 @@ export default class Chart extends React.Component {
     }
   });
 
-
-
-
-
+  this.WSConnect();
 
 }
 

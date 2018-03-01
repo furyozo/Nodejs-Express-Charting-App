@@ -22,10 +22,19 @@ module.exports = {
       query: {
         presets: ['es2015','react']
       }
+    }, {
+      test: /\.json$/,
+      loader: 'json-loader'
     }]
   },
   plugins: [
     new ExtractTextPlugin('public/public.css')
   ],
-  watch: true
+  watch: true,
+  node: {
+    console: true,
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 };

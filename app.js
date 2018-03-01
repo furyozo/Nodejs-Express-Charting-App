@@ -61,5 +61,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// run web sockets server
+require('./controllers/websockets.js').run("8080")
 
 module.exports = app;

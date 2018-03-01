@@ -7,29 +7,30 @@ export default class ChartContainer extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {inputCount: 3};
-    this.inputarr = [];
-    for (var i = 0; i < this.state.inputCount; i++) {
-      this.inputarr.push(1);
-    }
+    this.state = {value: ''};
+    this.handleSubmit = this.handleSubmit.bind(this);
+    // this.ws = new WebSocket('ws://localhost:8080');
   }
 
-  componentDidMount() {
-    document.getElementById("chart").innerHTML = "zop";
-  }
+  // connect to the web sockets server
+  // WSSend(str) {
+  //   console.log
+  //   // event emmited when connected
+  //   this.ws.onopen = function () {
+  //     console.log('websocket is connected ...')
+  //     // sending a send event to websocket server
+  //     ws.send(str)
+  //   }
+  //   // event emmited when receiving message
+  //   this.ws.onmessage = function (ev) {
+  //     console.log(ev);
+  //   }
+  // }
 
-  inputChange() {
-    var inputs = document.getElementsByClassName('poll-input');
-    var counter = 0;
-    for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].value) {
-        counter++;
-      }
-    }
-    if (counter === this.state.inputCount) {
-      this.inputarr.push(1);
-      this.setState({ inputCount: this.state.inputCount+1 });
-    }
+  handleSubmit(e) {
+    e.preventDefault();
+    console.log("got here");
+    // this.WSSend("connected");
   }
 
   render() {
@@ -38,14 +39,40 @@ export default class ChartContainer extends React.Component {
         {/* chart react element */}
         <Chart />
         {/* input a new stock */}
-        <form action="/stock/add" method="post" acceptCharset="UTF-8" role="form">
-          <div className="form-group">
-            <input className="form-control" placeholder="Stock code ..." name="name" type="text" />
+        <div className="row">
+          <div className="col-xs-12 col-sm-6">
+
+            <br/>
+            <div className="panel panel-default">
+              <div className="panel-heading">Stock info ...</div>
+              <div className="panel-body">
+                random data ...
+              </div>
+            </div>
+
           </div>
-          <div className="form-group">
-            <button className="btn btn-lg btn-default" type="submit" name="button">Add</button>
+          <div className="col-xs-12 col-sm-6">
+
+            <br/>
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                Add a new stock by code
+                <button className="btn btn-default btn-xs pull-right">
+                  <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div className="panel-body">
+                <form onSubmit={this.handleSubmit}>
+                  <div className="form-group">
+                    <input className="form-control" placeholder="Stock code ..." type="text" value={this.state.CodeValue}/>
+                  </div>
+                  <button className="btn btn-default">Add</button>
+                </form>
+              </div>
+            </div>
+
           </div>
-        </form>
+        </div>
       </div>
     );
   }
