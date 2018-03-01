@@ -11,7 +11,6 @@ export default class ChartContainer extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.inputValue = '';
-    // this.ws = new WebSocket('ws://localhost:8080');
   }
 
   // connect to the web sockets server
@@ -34,7 +33,6 @@ export default class ChartContainer extends React.Component {
     e.preventDefault();
     console.log(this.inputValue);
     this.WSConnect();
-    // this.WSSend("connected");
   }
 
   handleChange(e) {
@@ -48,7 +46,7 @@ export default class ChartContainer extends React.Component {
         <Chart />
         {/* input a new stock */}
         <div className="row">
-          <div className="col-xs-12 col-sm-6">
+          <div className="col-xs-12 col-sm-6 col-md-4">
 
             <br/>
             <div className="panel panel-default">
@@ -64,7 +62,7 @@ export default class ChartContainer extends React.Component {
             </div>
 
           </div>
-          <div className="col-xs-12 col-sm-6">
+          <div className="col-xs-12 col-sm-6 col-md-4">
 
             <br/>
             <div className="panel panel-default">

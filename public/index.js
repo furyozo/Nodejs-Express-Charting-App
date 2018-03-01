@@ -36772,7 +36772,6 @@ var ChartContainer = function (_React$Component) {
     _this.handleSubmit = _this.handleSubmit.bind(_this);
     _this.handleChange = _this.handleChange.bind(_this);
     _this.inputValue = '';
-    // this.ws = new WebSocket('ws://localhost:8080');
     return _this;
   }
 
@@ -36801,7 +36800,6 @@ var ChartContainer = function (_React$Component) {
       e.preventDefault();
       console.log(this.inputValue);
       this.WSConnect();
-      // this.WSSend("connected");
     }
   }, {
     key: 'handleChange',
@@ -36820,7 +36818,7 @@ var ChartContainer = function (_React$Component) {
           { className: 'row' },
           _react2.default.createElement(
             'div',
-            { className: 'col-xs-12 col-sm-6' },
+            { className: 'col-xs-12 col-sm-6 col-md-4' },
             _react2.default.createElement('br', null),
             _react2.default.createElement(
               'div',
@@ -36844,7 +36842,7 @@ var ChartContainer = function (_React$Component) {
           ),
           _react2.default.createElement(
             'div',
-            { className: 'col-xs-12 col-sm-6' },
+            { className: 'col-xs-12 col-sm-6 col-md-4' },
             _react2.default.createElement('br', null),
             _react2.default.createElement(
               'div',
@@ -36978,8 +36976,6 @@ var Chart = function (_React$Component) {
           }
         }
       });
-
-      // this.WSConnect();
     }
   }, {
     key: 'render',
