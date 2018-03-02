@@ -59,8 +59,10 @@ StockSchema.statics.add = function (name, callback) {
  StockSchema.statics.getChartableStock = function (name, callback) {
    // create new empty object
    var stockObj = {
-     name: '',
-     values: ''
+     label: '',
+     data: '',
+     borderColor: 'blue',
+     fill: false
    };
    // get the stock name
    yahooFinance.quote({
@@ -76,8 +78,8 @@ StockSchema.statics.add = function (name, callback) {
        if (err) console.error(err);
        else if (quotes.length === 0) console.error("stock does not exist");
        else {
-         stockObj.name = quote.price.longName;
-         stockObj.values = quotes.map(obj => obj.close);
+         stockObj.label = quote.price.longName;
+         stockObj.data = quotes.map(obj => obj.close);
          return callback(stockObj);
        }
      });

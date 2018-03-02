@@ -36771,28 +36771,38 @@ var ChartContainer = function (_React$Component) {
     _this.state = { value: '' };
     _this.handleSubmit = _this.handleSubmit.bind(_this);
     _this.handleChange = _this.handleChange.bind(_this);
+    _this.stocks = [];
     _this.inputValue = '';
     return _this;
   }
 
-  // connect to the web sockets server
-
-
   _createClass(ChartContainer, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {}
+
+    // connect to the web sockets server
+
+  }, {
     key: 'WSConnect',
     value: function WSConnect() {
       var ws = new WebSocket('ws://localhost:8080');
-      var message = this.inputValue;
+      var input = this.inputValue;
       // event emmited when connected
       ws.onopen = function () {
         console.log('websocket is connected ...');
         // sending a send event to websocket server
-        ws.send(message);
+        ws.send(JSON.stringify({
+          type: "code",
+          value: input
+        }));
       };
       // event emmited when receiving message
+      var React = this;
       ws.onmessage = function (ev) {
         console.log(ev);
-        console.log(JSON.parse(ev.data));
+        var stocks = JSON.parse(ev.data);
+        React.stocks = stocks;
+        React.forceUpdate();
       };
     }
   }, {
@@ -36813,34 +36823,36 @@ var ChartContainer = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_Chart2.default, null),
+        _react2.default.createElement(_Chart2.default, { stocks: this.stocks }),
         _react2.default.createElement(
           'div',
           { className: 'row' },
-          _react2.default.createElement(
-            'div',
-            { className: 'col-xs-12 col-sm-6 col-md-4' },
-            _react2.default.createElement('br', null),
-            _react2.default.createElement(
+          this.stocks.map(function (obj, i) {
+            return _react2.default.createElement(
               'div',
-              { className: 'panel panel-default' },
+              { className: 'col-xs-12 col-sm-6 col-md-4', key: i },
+              _react2.default.createElement('br', null),
               _react2.default.createElement(
                 'div',
-                { className: 'panel-heading' },
-                'Stock info ...',
+                { className: 'panel panel-default' },
                 _react2.default.createElement(
-                  'button',
-                  { className: 'btn btn-default btn-xs pull-right panel-button' },
-                  _react2.default.createElement('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' })
+                  'div',
+                  { className: 'panel-heading' },
+                  obj.label,
+                  _react2.default.createElement(
+                    'button',
+                    { className: 'btn btn-default btn-xs pull-right panel-button' },
+                    _react2.default.createElement('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' })
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel-body' },
+                  'random data ...'
                 )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'panel-body' },
-                'random data ...'
               )
-            )
-          ),
+            );
+          }),
           _react2.default.createElement(
             'div',
             { className: 'col-xs-12 col-sm-6 col-md-4' },
@@ -36895,7 +36907,7 @@ if (target) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(console) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -36929,47 +36941,44 @@ var Chart = function (_React$Component) {
   function Chart(props) {
     _classCallCheck(this, Chart);
 
-    return _possibleConstructorReturn(this, (Chart.__proto__ || Object.getPrototypeOf(Chart)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Chart.__proto__ || Object.getPrototypeOf(Chart)).call(this, props));
+
+    _this.handleClick = _this.handleClick.bind(_this);
+    return _this;
   }
 
-  // gets called after the componnent was mounted
-
-
   _createClass(Chart, [{
+    key: 'handleClick',
+    value: function handleClick() {
+      console.log(this.props.stocks);
+    }
+
+    // gets called after the componnent was mounted
+
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
 
-      new _chart2.default(document.getElementById("chart"), {
+      var stocks = this.props.stocks;
+      console.log(stocks);
+
+      var container = document.getElementById("chart");
+      container.innerHTML = "";
+      new _chart2.default(container, {
         type: 'line',
         data: {
           labels: [1500, 1600, 1700, 1750, 1800, 1850, 1900, 1950, 1999, 2050],
           datasets: [{
-            data: [86, 114, 106, 106, 107, 111, 133, 221, 783, 2478],
+            data: [86, 114, 106, 106, 107, 111, 133, 221, 783, 2478, 1],
             label: "Africa",
             borderColor: "#3e95cd",
             fill: false
           }, {
-            data: [282, 350, 411, 502, 635, 809, 947, 1402, 3700, 5267],
+            data: [282, 350, 411, 502, 635, 809, 947, 1402, 3700, 5267, 2],
             label: "Asia",
             borderColor: "#8e5ea2",
             fill: false
-          }, {
-            data: [168, 170, 178, 190, 203, 276, 408, 547, 675, 734],
-            label: "Europe",
-            borderColor: "#3cba9f",
-            fill: false
-          }, {
-            data: [40, 20, 10, 16, 24, 38, 74, 167, 508, 784],
-            label: "Latin America",
-            borderColor: "#e8c3b9",
-            fill: false
-          }, {
-            data: [6, 3, 2, 2, 7, 26, 82, 172, 312, 433],
-            label: "North America",
-            borderColor: "#c45850",
-            fill: false
-          }]
-        },
+          }] },
         options: {
           title: {
             display: true,
@@ -36981,7 +36990,16 @@ var Chart = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('canvas', { id: 'chart' });
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement('canvas', { id: 'chart' }),
+        _react2.default.createElement(
+          'button',
+          { onClick: this.handleClick },
+          'asd'
+        )
+      );
     }
   }]);
 
@@ -36989,6 +37007,7 @@ var Chart = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Chart;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
 /* 163 */

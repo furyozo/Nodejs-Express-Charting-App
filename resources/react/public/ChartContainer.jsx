@@ -10,23 +10,34 @@ export default class ChartContainer extends React.Component {
     this.state = {value: ''};
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.stocks = [];
     this.inputValue = '';
+  }
+
+  componentDidMount() {
+
   }
 
   // connect to the web sockets server
   WSConnect() {
     var ws = new WebSocket('ws://localhost:8080');
-    var message = this.inputValue;
+    var input = this.inputValue;
     // event emmited when connected
     ws.onopen = function () {
       console.log('websocket is connected ...')
       // sending a send event to websocket server
-      ws.send(message)
+      ws.send(JSON.stringify({
+        type: "code",
+        value: input
+      }));
     }
     // event emmited when receiving message
+    var React = this;
     ws.onmessage = function (ev) {
       console.log(ev);
-      console.log(JSON.parse(ev.data));
+      var stocks = JSON.parse(ev.data);
+      React.stocks = stocks;
+      React.forceUpdate();
     }
   }
 
@@ -44,27 +55,30 @@ export default class ChartContainer extends React.Component {
     return(
       <div>
         {/* chart react element */}
-        <Chart />
+        <Chart stocks={this.stocks}/>
         {/* input a new stock */}
         <div className="row">
-          <div className="col-xs-12 col-sm-6 col-md-4">
 
-            <br/>
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                Stock info ...
-                <button className="btn btn-default btn-xs pull-right panel-button">
-                  <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </button>
+          {this.stocks.map(function(obj, i) {
+            return (
+              <div className="col-xs-12 col-sm-6 col-md-4" key={i}>
+                <br/>
+                <div className="panel panel-default">
+                  <div className="panel-heading">
+                    {obj.label}
+                    <button className="btn btn-default btn-xs pull-right panel-button">
+                      <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                  <div className="panel-body">
+                    random data ...
+                  </div>
+                </div>
               </div>
-              <div className="panel-body">
-                random data ...
-              </div>
-            </div>
+            )
+          })}
 
-          </div>
           <div className="col-xs-12 col-sm-6 col-md-4">
-
             <br/>
             <div className="panel panel-default">
               <div className="panel-heading">
@@ -79,8 +93,8 @@ export default class ChartContainer extends React.Component {
                 </form>
               </div>
             </div>
-
           </div>
+
         </div>
       </div>
     );
