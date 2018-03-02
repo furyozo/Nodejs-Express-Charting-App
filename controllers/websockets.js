@@ -30,14 +30,14 @@ module.exports = class WS {
         console.log('received: ');
         message = JSON.parse(message);
 
-        if (message.type = "polls/get") {
+        if (message.type === "polls/get") {
           Stock.getChartableStocks(function(arr) {
-            console.log(arr);
+            // console.log(arr);
             ws.send(JSON.stringify(arr));
           });
         }
-
         else if (message.type === "stock/add") {
+          console.log("got here");
           WS.addCode(ws, message.value);
         }
 

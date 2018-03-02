@@ -36974,6 +36974,7 @@ var Chart = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Chart.__proto__ || Object.getPrototypeOf(Chart)).call(this, props));
 
     _this.handleClick = _this.handleClick.bind(_this);
+    _this.chart;
     return _this;
   }
 
@@ -36986,9 +36987,11 @@ var Chart = function (_React$Component) {
       console.log(stocks);
       console.log("/chart itself: ");
 
-      var container = document.getElementById("chart");
-      container.innerHTML = "";
-      new _chart2.default(container, {
+      var canvas = document.getElementById("chart");
+      if (this.chart) {
+        this.chart.destroy();
+      }
+      this.chart = new _chart2.default(canvas, {
         type: 'line',
         data: {
           labels: [1500, 1600, 1700, 1750, 1800, 1850, 1900, 1950, 1999, 2050],
@@ -37019,6 +37022,10 @@ var Chart = function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var Chart = this;
+      window.onresize = function (event) {
+        Chart.renderChart();
+      };
       this.renderChart();
     }
   }, {
