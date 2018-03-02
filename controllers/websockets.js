@@ -8,12 +8,12 @@ module.exports = class WS {
   /**
    * adds a new code to the databse and sends the new dataset to frotnend
    */
-  static addCode(ws, value) {
+  static addCode(wss, value) {
     Stock.add(value, function(err, stock) {
       if (err) console.error(err);
       Stock.getChartableStocks(function(arr) {
         // console.log(arr);
-        ws.send(JSON.stringify(arr));
+        wss.broadcast(JSON.stringify(arr));
       });
     })
   }
@@ -21,12 +21,12 @@ module.exports = class WS {
   /**
    * removes a stock and sends the new dataset to frotnend
    */
-  static removeCode(ws, value) {
+  static removeCode(wss, value) {
     Stock.remove({name: value}, function(err, stock) {
       if (err) console.error(err);
       Stock.getChartableStocks(function(arr) {
         // console.log(arr);
-        ws.send(JSON.stringify(arr));
+        wss.broadcast(JSON.stringify(arr));
       });
     })
   }
@@ -34,9 +34,9 @@ module.exports = class WS {
   /**
    * returns all the stocks by formatted stock objects
    */
-  static getStocks(ws) {
+  static getStocks(wss) {
     Stock.getChartableStocks(function(arr) {
-      ws.send(JSON.stringify(arr));
+      wss.broadcast(JSON.stringify(arr));
     });
   }
 
@@ -77,13 +77,11 @@ module.exports = class WS {
           }
           message = JSON.parse(message);
           if (message.type === "stock/all/get")
-            WS.getStocks(ws);
+            WS.getStocks(wss);
           else if (message.type === "stock/add")
-            WS.addCode(ws, message.value);
+            WS.addCode(wss, message.value);
           else if (message.type === "stock/remove")
-            WS.removeCode(ws, message.value);
-          else
-            WS.getStocks(ws);
+            WS.removeCode(wss, message.value);
         });
       });
       ws.on('error', (err) => console.log(err));
