@@ -14,11 +14,28 @@ export default class ChartContainer extends React.Component {
     this.inputValue = '';
   }
 
-  componentDidMount() {
-
+  // connect to the web sockets server and get stock data before mounting
+  componentWillMount() {
+    var ws = new WebSocket('ws://localhost:8080');
+    // event emmited when connected
+    ws.onopen = function () {
+      console.log('websocket is connected ...');
+      // sending a send event to websocket server
+      ws.send(JSON.stringify({
+        type: "polls/get"
+      }));
+    }
+    // event emmited when receiving message
+    var React = this;
+    ws.onmessage = function (ev) {
+      var stocks = JSON.parse(ev.data);
+      console.log(stocks);
+      React.stocks = stocks;
+      React.forceUpdate();
+    }
   }
 
-  // connect to the web sockets server
+  // connect to the web sockets server and get new stock data on update
   WSConnect() {
     var ws = new WebSocket('ws://localhost:8080');
     var input = this.inputValue;
@@ -27,7 +44,7 @@ export default class ChartContainer extends React.Component {
       console.log('websocket is connected ...')
       // sending a send event to websocket server
       ws.send(JSON.stringify({
-        type: "code",
+        type: "stock/add",
         value: input
       }));
     }
@@ -71,7 +88,10 @@ export default class ChartContainer extends React.Component {
                     </button>
                   </div>
                   <div className="panel-body">
-                    random data ...
+                    <p>
+                      <b>Current value: </b>
+                      {obj.data[obj.data.length-2]}
+                    </p>
                   </div>
                 </div>
               </div>

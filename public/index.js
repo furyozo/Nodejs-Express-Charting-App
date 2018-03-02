@@ -36776,11 +36776,32 @@ var ChartContainer = function (_React$Component) {
     return _this;
   }
 
-  _createClass(ChartContainer, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {}
+  // connect to the web sockets server and get stock data before mounting
 
-    // connect to the web sockets server
+
+  _createClass(ChartContainer, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      var ws = new WebSocket('ws://localhost:8080');
+      // event emmited when connected
+      ws.onopen = function () {
+        console.log('websocket is connected ...');
+        // sending a send event to websocket server
+        ws.send(JSON.stringify({
+          type: "polls/get"
+        }));
+      };
+      // event emmited when receiving message
+      var React = this;
+      ws.onmessage = function (ev) {
+        var stocks = JSON.parse(ev.data);
+        console.log(stocks);
+        React.stocks = stocks;
+        React.forceUpdate();
+      };
+    }
+
+    // connect to the web sockets server and get new stock data on update
 
   }, {
     key: 'WSConnect',
@@ -36792,7 +36813,7 @@ var ChartContainer = function (_React$Component) {
         console.log('websocket is connected ...');
         // sending a send event to websocket server
         ws.send(JSON.stringify({
-          type: "code",
+          type: "stock/add",
           value: input
         }));
       };
@@ -36848,7 +36869,16 @@ var ChartContainer = function (_React$Component) {
                 _react2.default.createElement(
                   'div',
                   { className: 'panel-body' },
-                  'random data ...'
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    _react2.default.createElement(
+                      'b',
+                      null,
+                      'Current value: '
+                    ),
+                    obj.data[obj.data.length - 2]
+                  )
                 )
               )
             );
@@ -36948,19 +36978,13 @@ var Chart = function (_React$Component) {
   }
 
   _createClass(Chart, [{
-    key: 'handleClick',
-    value: function handleClick() {
-      console.log(this.props.stocks);
-    }
-
-    // gets called after the componnent was mounted
-
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
+    key: 'renderChart',
+    value: function renderChart() {
 
       var stocks = this.props.stocks;
+      console.log("chart itself: ");
       console.log(stocks);
+      console.log("/chart itself: ");
 
       var container = document.getElementById("chart");
       container.innerHTML = "";
@@ -36968,17 +36992,8 @@ var Chart = function (_React$Component) {
         type: 'line',
         data: {
           labels: [1500, 1600, 1700, 1750, 1800, 1850, 1900, 1950, 1999, 2050],
-          datasets: [{
-            data: [86, 114, 106, 106, 107, 111, 133, 221, 783, 2478, 1],
-            label: "Africa",
-            borderColor: "#3e95cd",
-            fill: false
-          }, {
-            data: [282, 350, 411, 502, 635, 809, 947, 1402, 3700, 5267, 2],
-            label: "Asia",
-            borderColor: "#8e5ea2",
-            fill: false
-          }] },
+          datasets: stocks
+        },
         options: {
           title: {
             display: true,
@@ -36986,6 +37001,25 @@ var Chart = function (_React$Component) {
           }
         }
       });
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      this.renderChart();
+    }
+  }, {
+    key: 'handleClick',
+    value: function handleClick() {
+      console.log(this.props.stocks);
+      this.renderChart();
+    }
+
+    // gets called after the componnent was mounted
+
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.renderChart();
     }
   }, {
     key: 'render',

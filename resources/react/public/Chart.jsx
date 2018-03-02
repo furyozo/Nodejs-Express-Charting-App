@@ -9,15 +9,12 @@ export default class Chart extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
-    console.log(this.props.stocks);
-  }
-
-  // gets called after the componnent was mounted
-  componentDidMount() {
+  renderChart() {
 
     var stocks = this.props.stocks;
+    console.log("chart itself: ");
     console.log(stocks);
+    console.log("/chart itself: ");
 
     var container = document.getElementById("chart");
     container.innerHTML = "";
@@ -25,18 +22,8 @@ export default class Chart extends React.Component {
       type: 'line',
       data: {
         labels: [1500,1600,1700,1750,1800,1850,1900,1950,1999,2050],
-        datasets: [{
-          data: [86,114,106,106,107,111,133,221,783,2478, 1],
-          label: "Africa",
-          borderColor: "#3e95cd",
-          fill: false
-        }, {
-          data: [282,350,411,502,635,809,947,1402,3700,5267, 2],
-          label: "Asia",
-          borderColor: "#8e5ea2",
-          fill: false
-        }
-      ]},
+        datasets: stocks
+      },
       options: {
         title: {
           display: true,
@@ -45,6 +32,20 @@ export default class Chart extends React.Component {
       }
     });
 
+  }
+
+  componentDidUpdate() {
+    this.renderChart();
+  }
+
+  handleClick() {
+    console.log(this.props.stocks);
+    this.renderChart();
+  }
+
+  // gets called after the componnent was mounted
+  componentDidMount() {
+    this.renderChart();
   }
 
 render() {
