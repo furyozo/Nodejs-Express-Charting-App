@@ -5,6 +5,7 @@ import Chart from './Chart.jsx';
 
 export default class ChartContainer extends React.Component {
 
+  // chart container constructor
   constructor(props) {
     super(props);
     this.state = {value: ''};
@@ -15,6 +16,26 @@ export default class ChartContainer extends React.Component {
     this.inputValue = '';
   }
 
+  // ask the server for new data every 5 seconds to synchronize charts across all clients
+  getStockData() {
+    var ws = new WebSocket('ws://localhost:8080');
+    // event emmited when connected
+    ws.onopen = function () {
+      console.log('websocket is connected ...');
+      // sending a send event to websocket server
+      ws.send(JSON.stringify({
+        type: "stock/all/get"
+      }));
+    }
+    // event emmited when receiving message
+    var React = this;
+    ws.onmessage = function (ev) {
+      var stocks = JSON.parse(ev.data);
+      React.stocks = stocks;
+      React.forceUpdate();
+    }
+  }
+
   // connect to the web sockets server and get stock data before mounting
   componentWillMount() {
     var ws = new WebSocket('ws://localhost:8080');
@@ -23,21 +44,21 @@ export default class ChartContainer extends React.Component {
       console.log('websocket is connected ...');
       // sending a send event to websocket server
       ws.send(JSON.stringify({
-        type: "polls/get"
+        type: "stock/all/get"
       }));
     }
     // event emmited when receiving message
     var React = this;
     ws.onmessage = function (ev) {
       var stocks = JSON.parse(ev.data);
-      console.log(stocks);
       React.stocks = stocks;
       React.forceUpdate();
     }
   }
 
   // connect to the web sockets server and get new stock data on update
-  WSConnect() {
+  handleSubmit(e) {
+    e.preventDefault();
     var ws = new WebSocket('ws://localhost:8080');
     var input = this.inputValue;
     // event emmited when connected
@@ -52,23 +73,18 @@ export default class ChartContainer extends React.Component {
     // event emmited when receiving message
     var React = this;
     ws.onmessage = function (ev) {
-      console.log(ev);
       var stocks = JSON.parse(ev.data);
       React.stocks = stocks;
       React.forceUpdate();
     }
   }
 
-  handleSubmit(e) {
-    e.preventDefault();
-    console.log(this.inputValue);
-    this.WSConnect();
-  }
-
+  // on input change, save the input text value as ChartContainer component attribute
   handleChange(e) {
     this.inputValue = e.target.value;
   }
 
+  // remove stock from the server using web sockets
   removeStock(code) {
     var ws = new WebSocket('ws://localhost:8080');
     // event emmited when connected
@@ -84,12 +100,12 @@ export default class ChartContainer extends React.Component {
     var React = this;
     ws.onmessage = function (ev) {
       var stocks = JSON.parse(ev.data);
-      console.log(stocks);
       React.stocks = stocks;
       React.forceUpdate();
     }
   }
 
+  // ChartContainer render method
   render() {
     return(
       <div>

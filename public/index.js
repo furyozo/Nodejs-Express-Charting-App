@@ -36763,6 +36763,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ChartContainer = function (_React$Component) {
   _inherits(ChartContainer, _React$Component);
 
+  // chart container constructor
   function ChartContainer(props) {
     _classCallCheck(this, ChartContainer);
 
@@ -36777,10 +36778,33 @@ var ChartContainer = function (_React$Component) {
     return _this;
   }
 
-  // connect to the web sockets server and get stock data before mounting
+  // ask the server for new data every 5 seconds to synchronize charts across all clients
 
 
   _createClass(ChartContainer, [{
+    key: 'getStockData',
+    value: function getStockData() {
+      var ws = new WebSocket('ws://localhost:8080');
+      // event emmited when connected
+      ws.onopen = function () {
+        console.log('websocket is connected ...');
+        // sending a send event to websocket server
+        ws.send(JSON.stringify({
+          type: "stock/all/get"
+        }));
+      };
+      // event emmited when receiving message
+      var React = this;
+      ws.onmessage = function (ev) {
+        var stocks = JSON.parse(ev.data);
+        React.stocks = stocks;
+        React.forceUpdate();
+      };
+    }
+
+    // connect to the web sockets server and get stock data before mounting
+
+  }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
       var ws = new WebSocket('ws://localhost:8080');
@@ -36789,14 +36813,13 @@ var ChartContainer = function (_React$Component) {
         console.log('websocket is connected ...');
         // sending a send event to websocket server
         ws.send(JSON.stringify({
-          type: "polls/get"
+          type: "stock/all/get"
         }));
       };
       // event emmited when receiving message
       var React = this;
       ws.onmessage = function (ev) {
         var stocks = JSON.parse(ev.data);
-        console.log(stocks);
         React.stocks = stocks;
         React.forceUpdate();
       };
@@ -36805,8 +36828,9 @@ var ChartContainer = function (_React$Component) {
     // connect to the web sockets server and get new stock data on update
 
   }, {
-    key: 'WSConnect',
-    value: function WSConnect() {
+    key: 'handleSubmit',
+    value: function handleSubmit(e) {
+      e.preventDefault();
       var ws = new WebSocket('ws://localhost:8080');
       var input = this.inputValue;
       // event emmited when connected
@@ -36821,24 +36845,22 @@ var ChartContainer = function (_React$Component) {
       // event emmited when receiving message
       var React = this;
       ws.onmessage = function (ev) {
-        console.log(ev);
         var stocks = JSON.parse(ev.data);
         React.stocks = stocks;
         React.forceUpdate();
       };
     }
-  }, {
-    key: 'handleSubmit',
-    value: function handleSubmit(e) {
-      e.preventDefault();
-      console.log(this.inputValue);
-      this.WSConnect();
-    }
+
+    // on input change, save the input text value as ChartContainer component attribute
+
   }, {
     key: 'handleChange',
     value: function handleChange(e) {
       this.inputValue = e.target.value;
     }
+
+    // remove stock from the server using web sockets
+
   }, {
     key: 'removeStock',
     value: function removeStock(code) {
@@ -36856,11 +36878,13 @@ var ChartContainer = function (_React$Component) {
       var React = this;
       ws.onmessage = function (ev) {
         var stocks = JSON.parse(ev.data);
-        console.log(stocks);
         React.stocks = stocks;
         React.forceUpdate();
       };
     }
+
+    // ChartContainer render method
+
   }, {
     key: 'render',
     value: function render() {
@@ -36974,7 +36998,7 @@ if (target) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(console) {
+
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -37005,25 +37029,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Chart = function (_React$Component) {
   _inherits(Chart, _React$Component);
 
+  // chart constructor method
   function Chart(props) {
     _classCallCheck(this, Chart);
 
     var _this = _possibleConstructorReturn(this, (Chart.__proto__ || Object.getPrototypeOf(Chart)).call(this, props));
 
-    _this.handleClick = _this.handleClick.bind(_this);
     _this.chart;
     return _this;
   }
 
+  // char rerendering
+
+
   _createClass(Chart, [{
     key: 'renderChart',
     value: function renderChart() {
-
       var stocks = this.props.stocks;
-      console.log("chart itself: ");
-      console.log(stocks);
-      console.log("/chart itself: ");
-
       var canvas = document.getElementById("chart");
       if (this.chart) {
         this.chart.destroy();
@@ -37042,15 +37064,12 @@ var Chart = function (_React$Component) {
         }
       });
     }
+
+    // if component gets updated, rerender the chart
+
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
-      this.renderChart();
-    }
-  }, {
-    key: 'handleClick',
-    value: function handleClick() {
-      console.log(this.props.stocks);
       this.renderChart();
     }
 
@@ -37065,6 +37084,9 @@ var Chart = function (_React$Component) {
       };
       this.renderChart();
     }
+
+    // chart element rendering function
+
   }, {
     key: 'render',
     value: function render() {
@@ -37080,7 +37102,6 @@ var Chart = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Chart;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
 /* 163 */

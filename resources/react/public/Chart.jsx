@@ -4,19 +4,15 @@ import Chartjs from 'chart.js';
 
 export default class Chart extends React.Component {
 
+  // chart constructor method
   constructor(props) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
     this.chart;
   }
 
+  // char rerendering
   renderChart() {
-
     var stocks = this.props.stocks;
-    console.log("chart itself: ");
-    console.log(stocks);
-    console.log("/chart itself: ");
-
     var canvas = document.getElementById("chart");
     if (this.chart) {
       this.chart.destroy();
@@ -34,15 +30,10 @@ export default class Chart extends React.Component {
         }
       }
     });
-
   }
 
+  // if component gets updated, rerender the chart
   componentDidUpdate() {
-    this.renderChart();
-  }
-
-  handleClick() {
-    console.log(this.props.stocks);
     this.renderChart();
   }
 
@@ -55,13 +46,13 @@ export default class Chart extends React.Component {
     this.renderChart();
   }
 
-render() {
-  return(
-    <div>
-      <canvas id="chart"></canvas>
-      {/*<button onClick={this.handleClick}>asd</button>*/}
-    </div>
-  );
-}
+  // chart element rendering function
+  render() {
+    return(
+      <div>
+        <canvas id="chart"></canvas>
+      </div>
+    );
+  }
 
 }

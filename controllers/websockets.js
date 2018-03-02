@@ -49,10 +49,10 @@ module.exports = class WS {
     wss = new WebSocketServer({port: port})
     wss.on('connection', function (ws) {
       ws.on('message', function (message) {
-        console.log('received: ');
+        console.log('received: ' + message);
         message = JSON.parse(message);
 
-        if (message.type === "polls/get")
+        if (message.type === "stock/all/get")
           WS.getStocks(ws);
         else if (message.type === "stock/add")
           WS.addCode(ws, message.value);
