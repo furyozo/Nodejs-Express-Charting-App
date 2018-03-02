@@ -24,7 +24,8 @@ export default class ChartContainer extends React.Component {
       console.log('websocket is connected ...');
       // sending a send event to websocket server
       ws.send(JSON.stringify({
-        type: "stock/all/get"
+        type: "stock/all/get",
+        value: ""
       }));
     }
     // event emmited when receiving message
@@ -44,7 +45,8 @@ export default class ChartContainer extends React.Component {
       console.log('websocket is connected ...');
       // sending a send event to websocket server
       ws.send(JSON.stringify({
-        type: "stock/all/get"
+        type: "stock/all/get",
+        value: ""
       }));
     }
     // event emmited when receiving message

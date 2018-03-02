@@ -40,27 +40,56 @@ module.exports = class WS {
     });
   }
 
+  static isJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * runs the web socket server at  specified port
    */
   static run(port) {
     var WS = this;
-    var WebSocketServer = require('ws').Server,
-    wss = new WebSocketServer({port: port})
-    wss.on('connection', function (ws) {
-      ws.on('message', function (message) {
-        console.log('received: ' + message);
-        message = JSON.parse(message);
+    const WebSocket = require('ws');
+    const wss = new WebSocket.Server({ port: 8080 });
 
-        if (message.type === "stock/all/get")
-          WS.getStocks(ws);
-        else if (message.type === "stock/add")
-          WS.addCode(ws, message.value);
-        else if (message.type === "stock/remove")
-          WS.removeCode(ws, message.value);
+    // Broadcast to all.
+    wss.broadcast = function broadcast(data) {
+      wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(data);
+        }
+      });
+    };
 
-      })
-    })
+    wss.on('connection', function connection(ws) {
+      ws.on('message', function incoming(message) {
+        // Broadcast to everyone else.
+        wss.clients.forEach(function each(client) {
+          console.log('received: ' + message);
+          if (!WS.isJsonString(message)) {
+            console.error(message + " is not a JSON string");
+            return;
+          }
+          message = JSON.parse(message);
+          if (message.type === "stock/all/get")
+            WS.getStocks(ws);
+          else if (message.type === "stock/add")
+            WS.addCode(ws, message.value);
+          else if (message.type === "stock/remove")
+            WS.removeCode(ws, message.value);
+          else
+            WS.getStocks(ws);
+        });
+      });
+      ws.on('error', (err) => console.log(err));
+    });
+
+
   }
 
 }
