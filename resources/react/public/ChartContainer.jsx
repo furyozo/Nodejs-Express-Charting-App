@@ -26,6 +26,7 @@ export default class ChartContainer extends React.Component {
     // event emmited when receiving message
     ws.onmessage = function (ev) {
       console.log(ev);
+      console.log(JSON.parse(ev.data));
     }
   }
 

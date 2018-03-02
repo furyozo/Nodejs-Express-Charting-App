@@ -20,7 +20,7 @@ module.exports = class WS {
           if (err) console.error(err);
           Stock.getChartableStocks(function(arr) {
             console.log(arr);
-            ws.send(['hey', 'azsd']);
+            ws.send(JSON.stringify(arr));
           });
         })
 

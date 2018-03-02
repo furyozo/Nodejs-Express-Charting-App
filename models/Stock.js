@@ -78,7 +78,7 @@ StockSchema.statics.add = function (name, callback) {
        else {
          stockObj.name = quote.price.longName;
          stockObj.values = quotes.map(obj => obj.close);
-         callback(stockObj);
+         return callback(stockObj);
        }
      });
    });
