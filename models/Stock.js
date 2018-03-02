@@ -1,7 +1,7 @@
 var yahooFinance = require('yahoo-finance');
 
 const mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost:27017/')
+mongoose.connect('mongodb://prase:prase@ds151508.mlab.com:51508/charting-app')
 const db = mongoose.connection
 const Schema = mongoose.Schema
 
