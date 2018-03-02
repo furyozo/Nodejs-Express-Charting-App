@@ -12,10 +12,32 @@ module.exports = class WS {
     Stock.add(value, function(err, stock) {
       if (err) console.error(err);
       Stock.getChartableStocks(function(arr) {
-        console.log(arr);
+        // console.log(arr);
         ws.send(JSON.stringify(arr));
       });
     })
+  }
+
+  /**
+   * removes a stock and sends the new dataset to frotnend
+   */
+  static removeCode(ws, value) {
+    Stock.remove({name: value}, function(err, stock) {
+      if (err) console.error(err);
+      Stock.getChartableStocks(function(arr) {
+        // console.log(arr);
+        ws.send(JSON.stringify(arr));
+      });
+    })
+  }
+
+  /**
+   * returns all the stocks by formatted stock objects
+   */
+  static getStocks(ws) {
+    Stock.getChartableStocks(function(arr) {
+      ws.send(JSON.stringify(arr));
+    });
   }
 
   /**
@@ -30,22 +52,14 @@ module.exports = class WS {
         console.log('received: ');
         message = JSON.parse(message);
 
-        if (message.type === "polls/get") {
-          Stock.getChartableStocks(function(arr) {
-            // console.log(arr);
-            ws.send(JSON.stringify(arr));
-          });
-        }
-        else if (message.type === "stock/add") {
-          console.log("got here");
+        if (message.type === "polls/get")
+          WS.getStocks(ws);
+        else if (message.type === "stock/add")
           WS.addCode(ws, message.value);
-        }
+        else if (message.type === "stock/remove")
+          WS.removeCode(ws, message.value);
 
       })
-      // setInterval(
-      //   () => ws.send(`${new Date()}`),
-      //   1000
-      // )
     })
   }
 

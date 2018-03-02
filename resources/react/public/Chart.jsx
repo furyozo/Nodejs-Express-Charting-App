@@ -59,7 +59,7 @@ render() {
   return(
     <div>
       <canvas id="chart"></canvas>
-      <button onClick={this.handleClick}>asd</button>
+      {/*<button onClick={this.handleClick}>asd</button>*/}
     </div>
   );
 }

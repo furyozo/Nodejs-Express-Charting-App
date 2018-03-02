@@ -36771,6 +36771,7 @@ var ChartContainer = function (_React$Component) {
     _this.state = { value: '' };
     _this.handleSubmit = _this.handleSubmit.bind(_this);
     _this.handleChange = _this.handleChange.bind(_this);
+    _this.removeStock = _this.removeStock.bind(_this);
     _this.stocks = [];
     _this.inputValue = '';
     return _this;
@@ -36839,6 +36840,28 @@ var ChartContainer = function (_React$Component) {
       this.inputValue = e.target.value;
     }
   }, {
+    key: 'removeStock',
+    value: function removeStock(code) {
+      var ws = new WebSocket('ws://localhost:8080');
+      // event emmited when connected
+      ws.onopen = function () {
+        console.log('websocket is connected ...');
+        // sending a send event to websocket server
+        ws.send(JSON.stringify({
+          type: "stock/remove",
+          value: code
+        }));
+      };
+      // event emmited when receiving message
+      var React = this;
+      ws.onmessage = function (ev) {
+        var stocks = JSON.parse(ev.data);
+        console.log(stocks);
+        React.stocks = stocks;
+        React.forceUpdate();
+      };
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
@@ -36849,6 +36872,8 @@ var ChartContainer = function (_React$Component) {
           'div',
           { className: 'row' },
           this.stocks.map(function (obj, i) {
+            var _this2 = this;
+
             return _react2.default.createElement(
               'div',
               { className: 'col-xs-12 col-sm-6 col-md-4', key: i },
@@ -36862,7 +36887,9 @@ var ChartContainer = function (_React$Component) {
                   obj.label,
                   _react2.default.createElement(
                     'button',
-                    { className: 'btn btn-default btn-xs pull-right panel-button' },
+                    { className: 'btn btn-default btn-xs pull-right panel-button', onClick: function onClick() {
+                        return _this2.removeStock(obj.code);
+                      } },
                     _react2.default.createElement('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' })
                   )
                 ),
@@ -36878,11 +36905,21 @@ var ChartContainer = function (_React$Component) {
                       'Current value: '
                     ),
                     obj.data[obj.data.length - 2]
+                  ),
+                  _react2.default.createElement(
+                    'p',
+                    null,
+                    _react2.default.createElement(
+                      'b',
+                      null,
+                      'Code: '
+                    ),
+                    obj.code
                   )
                 )
               )
             );
-          }),
+          }, this),
           _react2.default.createElement(
             'div',
             { className: 'col-xs-12 col-sm-6 col-md-4' },
@@ -37034,12 +37071,7 @@ var Chart = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement('canvas', { id: 'chart' }),
-        _react2.default.createElement(
-          'button',
-          { onClick: this.handleClick },
-          'asd'
-        )
+        _react2.default.createElement('canvas', { id: 'chart' })
       );
     }
   }]);

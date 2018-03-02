@@ -10,6 +10,7 @@ export default class ChartContainer extends React.Component {
     this.state = {value: ''};
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.removeStock = this.removeStock.bind(this);
     this.stocks = [];
     this.inputValue = '';
   }
@@ -68,6 +69,27 @@ export default class ChartContainer extends React.Component {
     this.inputValue = e.target.value;
   }
 
+  removeStock(code) {
+    var ws = new WebSocket('ws://localhost:8080');
+    // event emmited when connected
+    ws.onopen = function () {
+      console.log('websocket is connected ...');
+      // sending a send event to websocket server
+      ws.send(JSON.stringify({
+        type: "stock/remove",
+        value: code
+      }));
+    }
+    // event emmited when receiving message
+    var React = this;
+    ws.onmessage = function (ev) {
+      var stocks = JSON.parse(ev.data);
+      console.log(stocks);
+      React.stocks = stocks;
+      React.forceUpdate();
+    }
+  }
+
   render() {
     return(
       <div>
@@ -83,7 +105,7 @@ export default class ChartContainer extends React.Component {
                 <div className="panel panel-default">
                   <div className="panel-heading">
                     {obj.label}
-                    <button className="btn btn-default btn-xs pull-right panel-button">
+                    <button className="btn btn-default btn-xs pull-right panel-button" onClick={() => this.removeStock(obj.code)}>
                       <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
                     </button>
                   </div>
@@ -92,11 +114,15 @@ export default class ChartContainer extends React.Component {
                       <b>Current value: </b>
                       {obj.data[obj.data.length-2]}
                     </p>
+                    <p>
+                      <b>Code: </b>
+                      {obj.code}
+                    </p>
                   </div>
                 </div>
               </div>
             )
-          })}
+          },this)}
 
           <div className="col-xs-12 col-sm-6 col-md-4">
             <br/>

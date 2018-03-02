@@ -62,7 +62,8 @@ StockSchema.statics.add = function (name, callback) {
      label: '',
      data: '',
      borderColor: 'blue',
-     fill: false
+     fill: false,
+     code: ''
    };
    // get the stock name
    yahooFinance.quote({
@@ -80,6 +81,7 @@ StockSchema.statics.add = function (name, callback) {
        else {
          stockObj.label = quote.price.longName;
          stockObj.data = quotes.map(obj => obj.close);
+         stockObj.code = name;
          return callback(stockObj);
        }
      });
